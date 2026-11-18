@@ -4,7 +4,7 @@ on:
     inputs:
       action-ref:
         description: ci-workflows ref under test (informational)
-        default: 2008caa0785b7cd17d3b95a24a34b2f5baae2684
+        default: 1921d5744e61162a94e9252d69168cf9e4e2ce8b
       rebase:
         description: rebase input of version-bump-pr
         default: 'true'
@@ -29,7 +29,7 @@ jobs:
           sed -i "s/MARKETING_VERSION = $CUR;/MARKETING_VERSION = $NEW;/" App.xcodeproj/project.pbxproj
           echo "BUILD_NUM=$(date +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
           echo "old=$CUR" >> "$GITHUB_OUTPUT"; echo "new=$NEW" >> "$GITHUB_OUTPUT"
-      - uses: johnpc/ci-workflows/actions/version-bump-pr@2008caa0785b7cd17d3b95a24a34b2f5baae2684
+      - uses: johnpc/ci-workflows/actions/version-bump-pr@1921d5744e61162a94e9252d69168cf9e4e2ce8b
         with:
           files: App.xcodeproj/project.pbxproj
           old-version: ${{ steps.v.outputs.old }}
