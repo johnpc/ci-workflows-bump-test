@@ -1,4 +1,4 @@
-name: CI (scratch)
+name: CI (scratch, v2)
 on:
   pull_request:
   workflow_dispatch:
