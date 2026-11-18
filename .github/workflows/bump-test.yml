@@ -1,0 +1,34 @@
+name: Bump test
+on:
+  workflow_dispatch:
+    inputs:
+      action-ref:
+        description: ci-workflows ref under test (informational)
+        default: 6a60bc27686f04fdc1e30920af7ce502ac2ee952
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      # Start from main's PARENT: main "moved during the deploy", so the bump branch is BEHIND.
+      - run: git checkout -q HEAD^ && git log --oneline -1
+      - name: Bump like ios-release does
+        id: v
+        run: |
+          CUR=$(grep -m1 MARKETING_VERSION App.xcodeproj/project.pbxproj | sed 's/.*= *\(.*\);/\1/')
+          NEW=$(echo "$CUR" | awk -F. '{print $1"."$2"."$3+1}')
+          sed -i "s/MARKETING_VERSION = $CUR;/MARKETING_VERSION = $NEW;/" App.xcodeproj/project.pbxproj
+          echo "BUILD_NUM=$(date +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
+          echo "old=$CUR" >> "$GITHUB_OUTPUT"; echo "new=$NEW" >> "$GITHUB_OUTPUT"
+      - uses: johnpc/ci-workflows/actions/version-bump-pr@6a60bc27686f04fdc1e30920af7ce502ac2ee952
+        with:
+          files: App.xcodeproj/project.pbxproj
+          old-version: ${{ steps.v.outputs.old }}
+          new-version: ${{ steps.v.outputs.new }}
+          ci-workflow: ci.yml
